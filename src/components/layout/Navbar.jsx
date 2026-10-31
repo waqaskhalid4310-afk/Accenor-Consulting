@@ -1,21 +1,28 @@
+
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useState } from "react";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { useEffect, useId, useRef, useState } from "react";
+import {
+  ChevronDown,
+  Menu,
+  X,
+  ArrowUpRight,
+} from "lucide-react";
+
 import { Container } from "@/components/shared/Container";
 import { siteConfig } from "@/config/site";
 import { services } from "@/data/services";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 
 function Logo({ onClick }) {
   return (
     <Link
       href="/"
       onClick={onClick}
-      className="group inline-flex shrink-0 items-center no-underline"
+      className="inline-flex shrink-0 items-center"
       aria-label="Accenor Consulting home"
     >
       <Image
@@ -32,69 +39,152 @@ function Logo({ onClick }) {
 
 export function Navbar() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
-  const [servicesOpen, setServicesOpen] = useState(false);
-  const [menuPath, setMenuPath] = useState(pathname);
   const menuId = useId();
 
-  // Reset mobile menu when the route changes (preferred over effect setState).
-  if (pathname !== menuPath) {
-    setMenuPath(pathname);
+  const [open, setOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
+  const [desktopServicesOpen, setDesktopServicesOpen] =
+    useState(false);
+
+  const menuRef = useRef(null);
+  const menuButtonRef = useRef(null);
+  const previousPath = useRef(pathname);
+
+  const closeMenu = () => {
     setOpen(false);
     setServicesOpen(false);
-  }
+  };
 
+  // Close navigation when route changes.
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
+    if (previousPath.current !== pathname) {
+      closeMenu();
+      setDesktopServicesOpen(false);
+      previousPath.current = pathname;
+    }
+  }, [pathname]);
+
+  // Prevent background scrolling while mobile navigation is open.
+  useEffect(() => {
+    if (!open) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
+  // Escape key and focus management.
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        closeMenu();
+        menuButtonRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [open]);
 
   const isActive = (href) => {
     if (href === "/") return pathname === "/";
+
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 
-  return (
-    <header className="sticky top-0 z-50 border-b border-border/80 bg-white/95 backdrop-blur-md">
-      <Container className="flex h-[4.5rem] items-center justify-between gap-3 sm:h-20 sm:gap-4">
-        <Logo onClick={() => setOpen(false)} />
+  const navLinkClass = (href) =>
+    cn(
+      "relative inline-flex items-center rounded-lg px-3 py-2.5",
+      "text-sm font-medium transition-colors duration-200",
+      "text-navy/80 hover:bg-muted hover:text-navy",
+      isActive(href) && "bg-muted text-navy"
+    );
 
+  return (
+    <header className="fixed top-0 left-0 right-0 z-[100] border-b border-border/80 bg-white/95 backdrop-blur-xl">
+
+      {/* Desktop / Main Navigation */}
+      <Container className="flex h-[4.5rem] items-center justify-between gap-3 sm:h-20">
+
+        <Logo onClick={closeMenu} />
+
+        {/* Desktop Links */}
         <nav
-          className="hidden items-center gap-0.5 xl:gap-1 lg:flex"
-          aria-label="Main"
+          className="hidden items-center gap-1 lg:flex"
+          aria-label="Main navigation"
         >
           {siteConfig.nav.map((item) => {
             if (item.children) {
               return (
-                <div key={item.href} className="relative group">
+                <div
+                  key={item.href}
+                  className="relative"
+                  onMouseEnter={() => setDesktopServicesOpen(true)}
+                  onMouseLeave={() => setDesktopServicesOpen(false)}
+                >
                   <Link
                     href={item.href}
                     className={cn(
-                      "inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-navy/80 transition hover:bg-muted hover:text-navy",
-                      isActive(item.href) && "bg-muted text-navy",
+                      navLinkClass(item.href),
+                      "gap-1"
                     )}
+                    aria-haspopup="true"
+                    aria-expanded={desktopServicesOpen}
+                    onFocus={() => setDesktopServicesOpen(true)}
+                    onBlur={(event) => {
+                      if (
+                        !event.currentTarget.parentElement?.contains(
+                          event.relatedTarget
+                        )
+                      ) {
+                        setDesktopServicesOpen(false);
+                      }
+                    }}
                   >
                     {item.label}
-                    <ChevronDown className="size-3.5 opacity-70" aria-hidden />
+                    <ChevronDown
+                      className={cn(
+                        "size-3.5 transition-transform",
+                        desktopServicesOpen && "rotate-180"
+                      )}
+                    />
                   </Link>
-                  <div className="invisible absolute left-0 top-full z-50 min-w-[280px] pt-2 opacity-0 transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-                    <div className="rounded-xl border border-border bg-white p-2 shadow-lg">
+
+                  <div
+                    className={cn(
+                      "absolute left-0 top-full z-50 w-72 pt-3",
+                      "transition-all duration-200",
+                      desktopServicesOpen
+                        ? "visible translate-y-0 opacity-100"
+                        : "invisible -translate-y-2 opacity-0"
+                    )}
+                  >
+                    <div className="rounded-xl border border-border bg-white p-2 shadow-xl">
+
                       {services.map((service) => (
                         <Link
                           key={service.slug}
                           href={`/services/${service.slug}`}
-                          className="block rounded-lg px-3 py-2.5 text-sm text-navy/80 transition hover:bg-muted hover:text-navy"
+                          className="block rounded-lg px-3 py-3 text-sm text-navy/80 transition hover:bg-muted hover:text-navy"
                         >
                           {service.navLabel}
                         </Link>
                       ))}
+
                       <Link
                         href="/services"
-                        className="mt-1 block rounded-lg border-t border-border px-3 py-2.5 text-sm font-semibold text-brand"
+                        className="mt-1 flex items-center justify-between border-t border-border px-3 py-3 text-sm font-semibold text-brand"
                       >
-                        View all services →
+                        View all services
+                        <ArrowUpRight className="size-4" />
                       </Link>
                     </div>
                   </div>
@@ -106,11 +196,7 @@ export function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={cn(
-                  "rounded-lg px-3 py-2 text-sm font-medium text-navy/80 transition hover:bg-muted hover:text-navy",
-                  isActive(item.href) &&
-                    "bg-muted text-navy underline decoration-accent-green decoration-2 underline-offset-8",
-                )}
+                className={navLinkClass(item.href)}
               >
                 {item.label}
               </Link>
@@ -118,71 +204,161 @@ export function Navbar() {
           })}
         </nav>
 
+        {/* Desktop CTA + Mobile Toggle */}
         <div className="flex items-center gap-2">
+
           <Link
             href={siteConfig.cta.href}
-            className="hidden h-11 items-center justify-center rounded-xl bg-brand px-4 text-sm font-semibold text-white transition hover:bg-brand-muted sm:inline-flex"
+            className="hidden h-11 items-center justify-center gap-2 rounded-xl bg-brand px-5 text-sm font-semibold text-white transition hover:bg-brand-muted sm:inline-flex"
           >
             {siteConfig.cta.label}
+            <ArrowUpRight className="size-4" />
           </Link>
+
           <button
+            ref={menuButtonRef}
             type="button"
-            className="inline-flex size-11 items-center justify-center rounded-xl border border-border text-navy lg:hidden cursor-pointer"
+            className={cn(
+              "inline-flex size-11 items-center justify-center cursor-pointer",
+              "rounded-xl border border-border text-navy",
+              "transition-colors hover:bg-muted",
+              "focus-visible:outline-none focus-visible:ring-2",
+              "focus-visible:ring-brand lg:hidden"
+            )}
             aria-expanded={open}
             aria-controls={menuId}
             aria-label={open ? "Close menu" : "Open menu"}
             onClick={() => setOpen((value) => !value)}
           >
-            {open ? <X className="size-5" /> : <Menu className="size-5" />}
+            {open ? (
+              <X className="size-5" />
+            ) : (
+              <Menu className="size-5" />
+            )}
           </button>
         </div>
       </Container>
 
-      {open ? (
-        <div
-          id={menuId}
-          className="border-t border-border bg-white lg:hidden"
-        >
-          <Container className="flex max-h-[calc(100dvh-110px)] flex-col gap-1 overflow-y-auto py-4">
+      {/* Mobile Navigation Overlay */}
+      <div
+        className={cn(
+          "fixed inset-0 top-[4.5rem] z-[105] bg-black/35",
+          "transition-opacity duration-300 lg:hidden sm:top-20",
+          open
+            ? "visible opacity-100"
+            : "invisible pointer-events-none opacity-0"
+        )}
+        onClick={closeMenu}
+        aria-hidden="true"
+      />
+
+      {/* Mobile Navigation Drawer */}
+      <div
+        id={menuId}
+        ref={menuRef}
+        aria-label="Mobile navigation"
+        aria-hidden={!open}
+        className={cn(
+          "absolute left-0 right-0 top-full z-[110]",
+          "max-h-[calc(100dvh-4.5rem)] overflow-y-auto",
+          "border-b border-border bg-white shadow-2xl",
+          "transition-all duration-300 ease-out lg:hidden sm:max-h-[calc(100dvh-5rem)]",
+          open
+            ? "visible translate-y-0 opacity-100"
+            : "invisible -translate-y-3 opacity-0"
+        )}
+      >
+        <Container className="flex flex-col gap-3 py-5">
+
+          {/* Navigation Label */}
+          <div className="px-2">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              Navigation
+            </p>
+          </div>
+
+          {/* Navigation Links */}
+          <nav
+            className="flex flex-col gap-1"
+            aria-label="Mobile menu"
+          >
             {siteConfig.nav.map((item) => {
+
               if (item.children) {
                 return (
-                  <div key={item.href} className="rounded-xl border border-border">
-                    <button
-                      type="button"
-                      className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-semibold text-navy"
-                      onClick={() => setServicesOpen((value) => !value)}
-                      aria-expanded={servicesOpen}
-                    >
-                      {item.label}
-                      <ChevronDown
+                  <div
+                    key={item.href}
+                    className="overflow-hidden rounded-xl border border-border"
+                  >
+                    <div className="flex items-center">
+
+                      <Link
+                        href={item.href}
+                        tabIndex={open ? 0 : -1}
                         className={cn(
-                          "size-4 transition",
-                          servicesOpen && "rotate-180",
+                          "flex min-h-12 flex-1 items-center px-4",
+                          "text-sm font-semibold text-navy",
+                          isActive(item.href) && "text-brand"
                         )}
-                      />
-                    </button>
-                    {servicesOpen ? (
-                      <div className="border-t border-border px-2 pb-2">
-                        <Link
-                          href="/services"
-                          className="block rounded-lg px-3 py-2.5 text-sm font-medium text-brand"
-                          onClick={() => setOpen(false)}
-                        >
-                          All services
-                        </Link>
-                        {services.map((service) => (
+                        onClick={closeMenu}
+                      >
+                        {item.label}
+                      </Link>
+
+                      <button
+                        type="button"
+                        tabIndex={open ? 0 : -1}
+                        className="flex size-12 shrink-0 items-center justify-center text-navy transition hover:bg-muted"
+                        aria-label="Toggle services submenu"
+                        aria-expanded={servicesOpen}
+                        onClick={() =>
+                          setServicesOpen((value) => !value)
+                        }
+                      >
+                        <ChevronDown
+                          className={cn(
+                            "size-4 transition-transform duration-200",
+                            servicesOpen && "rotate-180"
+                          )}
+                        />
+                      </button>
+                    </div>
+
+                    <div
+                      className={cn(
+                        "grid transition-all duration-300",
+                        servicesOpen
+                          ? "grid-rows-[1fr]"
+                          : "grid-rows-[0fr]"
+                      )}
+                    >
+                      <div className="overflow-hidden">
+                        <div className="border-t border-border bg-muted/30 px-3 py-2">
+
                           <Link
-                            key={service.slug}
-                            href={`/services/${service.slug}`}
-                            className="block rounded-lg px-3 py-2.5 text-sm text-navy/80"
-                            onClick={() => setOpen(false)}
+                            href="/services"
+                            tabIndex={open && servicesOpen ? 0 : -1}
+                            className="flex min-h-11 items-center justify-between rounded-lg px-3 text-sm font-semibold text-brand"
+                            onClick={closeMenu}
                           >
-                            {service.navLabel}
+                            All Services
+                            <ArrowUpRight className="size-4" />
                           </Link>
-                        ))}
+
+                          {services.map((service) => (
+                            <Link
+                              key={service.slug}
+                              href={`/services/${service.slug}`}
+                              tabIndex={open && servicesOpen ? 0 : -1}
+                              className="flex min-h-11 items-center rounded-lg px-3 text-sm text-navy/75 transition hover:bg-white hover:text-navy"
+                              onClick={closeMenu}
+                            >
+                              {service.navLabel}
+                            </Link>
+                          ))}
+                        </div>
                       </div>
-                    ) : null}
+                    </div>
                   </div>
                 );
               }
@@ -191,26 +367,23 @@ export function Navbar() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  tabIndex={open ? 0 : -1}
                   className={cn(
-                    "rounded-xl px-4 py-3 text-sm font-semibold text-navy/80",
-                    isActive(item.href) && "bg-muted text-navy",
+                    "flex min-h-12 items-center rounded-xl px-4",
+                    "text-sm font-semibold text-navy/80",
+                    "transition-colors hover:bg-muted",
+                    isActive(item.href) &&
+                      "bg-muted text-brand"
                   )}
-                  onClick={() => setOpen(false)}
+                  onClick={closeMenu}
                 >
                   {item.label}
                 </Link>
               );
             })}
-            <Link
-              href={siteConfig.cta.href}
-              className="mt-2 inline-flex h-12 items-center justify-center rounded-xl bg-brand text-sm font-semibold text-white"
-              onClick={() => setOpen(false)}
-            >
-              {siteConfig.cta.label}
-            </Link>
-          </Container>
-        </div>
-      ) : null}
+          </nav>
+        </Container>
+      </div>
     </header>
   );
 }

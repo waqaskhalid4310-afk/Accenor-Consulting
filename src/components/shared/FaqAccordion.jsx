@@ -22,14 +22,14 @@ export function FaqAccordion({ items, defaultOpenIndex = 0, className }) {
           <div key={faq.question} className="px-5">
             <button
               type="button"
-              className="flex w-full items-center justify-between gap-4 py-5 text-left"
+              className="flex w-full items-center justify-between gap-4 py-5 text-left cursor-pointer"
               aria-expanded={open}
               onClick={() => setOpenIndex(open ? -1 : index)}
             >
               <span className="text-base font-semibold text-navy">
                 {faq.question}
               </span>
-              <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-white text-brand shadow-sm">
+              <span className="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full bg-white text-brand shadow-sm">
                 {open ? (
                   <Minus className="size-4" aria-hidden />
                 ) : (

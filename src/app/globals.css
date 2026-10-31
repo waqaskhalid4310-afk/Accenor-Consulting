@@ -108,13 +108,13 @@
 
   html {
     @apply scroll-smooth;
-    /* Avoid horizontal scroll on small / large viewports */
-    overflow-x: clip;
+    /* hidden (not clip) so sticky navbar keeps working while scrolled */
+    overflow-x: hidden;
   }
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    overflow-x: clip;
+    overflow-x: hidden;
   }
 
   h1,

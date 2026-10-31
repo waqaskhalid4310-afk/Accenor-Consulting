@@ -18,7 +18,7 @@ export function HeroSection() {
 
   return (
     <section className="hero-glow relative overflow-hidden">
-      <Container className="grid items-center gap-10 py-10 sm:gap-12 sm:py-12 lg:grid-cols-2 lg:gap-8 lg:py-16 xl:gap-12 xl:py-20 2xl:gap-16">
+      <Container className="grid items-center gap-10 pt-12 pb-10 sm:gap-12 sm:pt-14 sm:pb-12 lg:grid-cols-2 lg:gap-8 lg:pt-12 lg:pb-10 xl:gap-12 xl:pt-14 xl:pb-12 2xl:gap-16 2xl:pt-16">
         <motion.div
           initial={reduceMotion ? false : { opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
