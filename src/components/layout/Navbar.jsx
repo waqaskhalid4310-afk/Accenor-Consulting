@@ -26,11 +26,11 @@ function Logo({ onClick }) {
       aria-label="Accenor Consulting home"
     >
       <Image
-        src="/icons/canvas.png"
+        src="/icons/web_logo-removebg.png"
         alt="Accenor Consulting"
-        width={200}
-        height={50}
-        className="h-7 w-auto object-contain sm:h-8 md:h-9"
+        width={280}
+        height={70}
+        className="h-11 w-auto object-contain sm:h-12 md:h-[3.25rem]"
         priority
       />
     </Link>
