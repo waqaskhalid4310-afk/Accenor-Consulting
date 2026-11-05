@@ -14,7 +14,7 @@ export function ClientLogoGrid({ clients, className, gridClassName }) {
           <li key={client.id} className="flex justify-center">
             <ClientLogoPill
               client={client}
-              className="h-auto min-h-[72px] w-full max-w-[200px] rounded-md hover:border-brand/30 sm:min-h-[76px]"
+              className="h-[88px] w-full max-w-[200px] rounded-md hover:border-brand/30 sm:h-[96px]"
             />
           </li>
         ))}

@@ -5,7 +5,7 @@ export function ClientLogoPill({ client, className }) {
   return (
     <div
       className={cn(
-        "group flex h-[72px] w-[168px] shrink-0 items-center justify-center rounded-md border border-solid border-border bg-white px-6 py-3 sm:h-[76px] sm:w-[180px]",
+        "group flex h-[88px] w-[180px] shrink-0 items-center justify-center rounded-md border border-solid border-border bg-white p-2.5 sm:h-[96px] sm:w-[200px] sm:p-3",
         className,
       )}
     >
@@ -13,10 +13,10 @@ export function ClientLogoPill({ client, className }) {
         <Image
           src={client.logoSrc}
           alt={client.alt || client.name}
-          width={140}
-          height={40}
-          className="h-9 max-w-[132px] object-contain sm:h-10 sm:max-w-[140px]"
-          style={{ width: "auto" }}
+          width={200}
+          height={96}
+          className="h-full w-full object-contain"
+          sizes="200px"
         />
       ) : (
         <span className="text-xs font-semibold tracking-wide text-navy/60">

@@ -8,39 +8,11 @@ export const clients = [
     alt: "Achievers logo",
   },
   {
-    id: "av-limousine",
-    name: "AV Limousine",
-    logoSrc: "/images/clients/av_limousine.jpg",
-    placeholder: false,
-    alt: "AV Limousine logo",
-  },
-  {
     id: "ecom-scalers",
     name: "Ecom Scalers",
     logoSrc: "/images/clients/ecom$calers.jpg",
     placeholder: false,
     alt: "Ecom Scalers logo",
-  },
-  {
-    id: "fax",
-    name: "Fax",
-    logoSrc: "/images/clients/fax.jpg",
-    placeholder: false,
-    alt: "Fax logo",
-  },
-  {
-    id: "maher",
-    name: "Maher",
-    logoSrc: "/images/clients/maher_client.jpg",
-    placeholder: false,
-    alt: "Maher client logo",
-  },
-  {
-    id: "nordic-passage",
-    name: "Nordic Passage",
-    logoSrc: "/images/clients/nordic_passage.jpg",
-    placeholder: false,
-    alt: "Nordic Passage logo",
   },
   {
     id: "revision-aps",
@@ -64,12 +36,19 @@ export const clients = [
     alt: "SPS logo",
   },
   {
-    id: "star",
-    name: "Star",
-    logoSrc: "/images/clients/star.jpg",
+    id: "tech-baba",
+    name: "Tech Baba",
+    logoSrc: "/images/clients/tech_baba.jpg",
     placeholder: false,
-    alt: "Star logo",
+    alt: "Tech Baba logo",
   },
+  {
+    id: "dr_tech_store",
+    name: "Dr Tech Store",
+    logoSrc: "/images/clients/dr_tech_store.jpg",
+    placeholder: false,
+    alt: "Dr Tech Store logo",
+  }
 ];
 
 // Home carousel uses the full set (one continuous row).

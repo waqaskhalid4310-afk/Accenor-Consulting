@@ -95,7 +95,7 @@ export function Footer() {
               <li className="max-w-[240px] leading-relaxed">
                 {contact.addressFull}
               </li>
-              <li className="leading-relaxed">{social.linkedinStatus}</li>
+              {/* <li className="leading-relaxed">{social.linkedinStatus}</li> */}
             </ul>
           </div>
         </div>
